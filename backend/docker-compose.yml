@@ -1,0 +1,19 @@
+services:
+  backend-service:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    env_file:
+      - ./.env
+    environment:
+      - NODE_ENV=development
+    command: npm run dev
+
+  test:
+    build: .
+    env_file:
+      - ./.env
+    command: npm test
