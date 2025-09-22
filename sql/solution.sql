@@ -40,7 +40,7 @@ revenue_per_campaign AS (
 
 -- Step 3: Get the 7-day window for each campaign starting from users’ install dates
 -- Use DISTINCT because some of these days can overlap between different installs
--- Read the Assumptions section in the README.md file
+-- Read this https://github.com/obafemitayor/martech-technical-test/blob/main/sql/README.md#assumptions
 campaign_day_windows AS (
   SELECT
     i.campaign_id,
