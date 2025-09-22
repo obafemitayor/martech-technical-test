@@ -6,15 +6,8 @@
 -- The queries in the FINAL OUTPUTS section can only be executed one at a time. So if you want to execute 
 -- one, then you need to comment the other two.
 
--- Helper table to simulate 0–6 day offsets
-WITH RECURSIVE numbers(n) AS (
-  SELECT 0
-  UNION ALL
-  SELECT n + 1 FROM numbers WHERE n < 6
-),
-
 -- Step 1: Get all purchases made within 7 days after users installed from the campaigns
-user_d7_purchases AS (
+WITH user_d7_purchases AS (
   SELECT
     i.user_id,
     i.campaign_id,
@@ -38,31 +31,32 @@ revenue_per_campaign AS (
   GROUP BY campaign_id
 ),
 
--- Step 3: Get the 7-day window for each campaign starting from users’ install dates
--- Use DISTINCT because some of these days can overlap between different installs
--- Read this https://github.com/obafemitayor/martech-technical-test/blob/main/sql/README.md#assumptions
-campaign_day_windows AS (
-  SELECT
-    i.campaign_id,
-    DATE(i.install_ts, '+' || n || ' days') AS cost_date
-  FROM installs i
-  CROSS JOIN numbers
-  GROUP BY 1, 2
-),
-
--- Step 4: Get the total ad cost for each campaign in its 7-day windows
+-- Step 3: Get the total ad cost for each campaign in its 7-day windows
 ad_costs_d7_per_campaign AS (
+  -- Get the 7-day window for each campaign starting from users’ install dates
+  -- Read this https://github.com/obafemitayor/martech-technical-test/blob/main/sql/README.md#assumptions
+  WITH campaign_date_ranges AS (
+    -- First, find the earliest install date and the latest cost date needed for each campaign.
+    SELECT
+      campaign_id,
+      MIN(DATE(install_ts)) AS first_install_date,
+      DATE(MAX(DATE(install_ts)), '+7 days') AS after_last_install_date
+    FROM installs
+    GROUP BY campaign_id
+  )
+  -- Now, join ad_costs to this much smaller, pre-aggregated campaign_date_ranges table.
   SELECT
-    cdw.campaign_id,
+    cdr.campaign_id,
     SUM(ac.cost) AS ad_cost_d7
-  FROM campaign_day_windows cdw
+  FROM campaign_date_ranges cdr
   JOIN ad_costs ac
-    ON ac.campaign_id = cdw.campaign_id
-   AND ac.date = cdw.cost_date
-  GROUP BY cdw.campaign_id
+    ON ac.campaign_id = cdr.campaign_id
+   AND ac.date >= cdr.first_install_date
+   AND ac.date < cdr.after_last_install_date
+  GROUP BY cdr.campaign_id
 ),
 
--- Step 5: Get the total 7-day revenue per country for each campaign
+-- Step 4: Get the total 7-day revenue per country for each campaign
 revenue_per_campaign_country AS (
   SELECT
     campaign_id,
@@ -72,7 +66,7 @@ revenue_per_campaign_country AS (
   GROUP BY campaign_id, country
 ),
 
--- Step 6: Get installs per country for each campaign  
+-- Step 5: Get installs per country for each campaign  
 -- Also include total installs per campaign to use for splitting ad costs later
 installs_per_campaign_country AS (
   SELECT
@@ -84,7 +78,7 @@ installs_per_campaign_country AS (
   GROUP BY campaign_id, country
 ),
 
--- Step 7: Get ad cost per country for each campaign (allocated by share of installs)
+-- Step 6: Get ad cost per country for each campaign (allocated by share of installs)
 ad_costs_per_campaign_country AS (
   SELECT
     icc.campaign_id,
@@ -94,7 +88,7 @@ ad_costs_per_campaign_country AS (
   JOIN ad_costs_d7_per_campaign ac ON icc.campaign_id = ac.campaign_id
 ),
 
--- Step 8: Get ROAS per country for each campaign
+-- Step 7: Get ROAS per country for each campaign
 roas_per_country AS (
   SELECT
     r.country,
