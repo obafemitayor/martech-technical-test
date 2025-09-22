@@ -53,6 +53,20 @@ To handle temporary failures when forwarding events to the external AdEvents API
 
 ---
 
+## Authentication
+
+This challenge did not explicitly require authentication, but I included a minimal JWT-based security layer to demonstrate how I would secure this API in a real-world scenario.
+
+### `/auth` Endpoint
+
+- A dedicated `/auth` endpoint is provided to generate JWT tokens.  
+- It accepts a simple payload `{"clientId": "marketing-dashboard"}` and returns a signed JWT.  
+- The generated JWT can then be used to access the `/events` endpoint by including it in the `Authorization` header as a Bearer token:
+
+```http
+Authorization: Bearer <token>
+
+
 ## Running the Application
 
 ### 1. Running Locally
