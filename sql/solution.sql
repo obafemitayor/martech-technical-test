@@ -40,12 +40,14 @@ revenue_per_campaign AS (
 
 -- Step 3: Get the 7-day window for each campaign starting from users’ install dates
 -- Use DISTINCT because some of these days can overlap between different installs
+-- Read the Assumptions section in the README.md file
 campaign_day_windows AS (
-  SELECT DISTINCT
+  SELECT
     i.campaign_id,
     DATE(i.install_ts, '+' || n || ' days') AS cost_date
   FROM installs i
   CROSS JOIN numbers
+  GROUP BY 1, 2
 ),
 
 -- Step 4: Get the total ad cost for each campaign in its 7-day windows
@@ -77,8 +79,8 @@ installs_per_campaign_country AS (
     campaign_id,
     country,
     COUNT(DISTINCT user_id) AS installs,
-    (SELECT COUNT(DISTINCT user_id) FROM installs i2 WHERE i2.campaign_id = i1.campaign_id) AS total_installs
-  FROM installs i1
+    SUM(COUNT(DISTINCT user_id)) OVER (PARTITION BY campaign_id) AS total_installs
+  FROM installs
   GROUP BY campaign_id, country
 ),
 

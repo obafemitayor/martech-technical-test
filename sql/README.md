@@ -174,5 +174,27 @@ Now compare revenue vs cost:
 
 ---
 
+---
+
+## Assumptions
+
+### How the calculation of the total money spent on ads was gotten i.e ad_costs_d7_per_campaign
+
+To get the total money spent on ads, we need to sum up the costs for each day in a 7-day window starting from when a user installs from a campaign. Seems pretty straight forward if it was one install per campaign, but because multiple users can install from a campaign, then there is a possibility users installation days can overlap with each other.
+
+This then leaves an ambiguity in the requirement on whether the adcost for an overlapping day should be counted once, or if it should be counted again for each overlapping user.
+
+For this solution, I have chosen to count the adcost for an overlapping day once.
+
+Example:
+
+Imagine a campaign where a user installs on Day 1. The challenge requires us to sum the ad costs for the next 7 days (Day 1 to Day 7).
+Now, imagine another user from the same campaign installs on Day 3. For this user, we must sum the ad costs from Day 3 to Day 9.
+If we are not careful, we might calculate the costs for the first user (Days 1-7) and add them to the costs for the second user (Days 3-9).
+
+If we did that, we would double-count the ad costs for the overlapping days (Days 3, 4, 5, 6, and 7). This would incorrectly inflate our total ad spend and give us an artificially low ROAS.
+
+---
+
 You can find screenshots of all the query outputs in the **screenshots** folder.  
 These screenshots illustrate the explanations above and allows you to cross-check the results step by step.  
