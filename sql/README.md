@@ -46,7 +46,12 @@ Stores how much money was spent per campaign per day.
 **Columns:**  
 - campaign_id  
 - date  
-- cost  
+- cost
+
+---
+
+## Compatibility
+The query in this script was written to work for SQLite. It will require some modifications to run on other database systems, such as PostgreSQL or BigQuery.
 
 ---
 

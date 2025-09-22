@@ -3,6 +3,8 @@
 -- 2. ROAS (Return on Ad Spend) per campaign within 7 days after users install from the campaign
 -- 3. Top 3 countries with the highest ROAS (Return on Ad Spend) within 7 days after campaign installation
 
+
+-- This query is written for SQLite and will require some modifications to run on other database systems, such as PostgreSQL or BigQuery.
 -- The queries in the FINAL OUTPUTS section can only be executed one at a time. So if you want to execute 
 -- one, then you need to comment the other two.
 
