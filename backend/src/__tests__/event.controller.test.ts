@@ -69,6 +69,8 @@ describe("POST /events", () => {
       eventTime: new Date().toISOString(),
       value: 100,
       campaignId: "test-campaign",
+      source: "internal_martech",
+      clickId: "test-click-id",
     };
     mockedAdEventsXDummyApi.mockResolvedValue({
       status: 202,
@@ -92,6 +94,8 @@ describe("POST /events", () => {
       event_time: new Date().toISOString(),
       value: 50,
       campaign_id: "idempotent-campaign",
+      source: "internal_martech",
+      click_id: "test-click-id",
     };
 
     mockedAdEventsXDummyApi.mockResolvedValue({
@@ -125,6 +129,8 @@ describe("POST /events", () => {
       eventTime: new Date().toISOString(),
       value: 100,
       campaignId: "test-campaign",
+      source: "internal_martech",
+      clickId: "test-click-id",
     };
     mockedAdEventsXDummyApi
       .mockRejectedValueOnce({ status: 503, requestId: "mock-fail-id" })
@@ -147,6 +153,8 @@ describe("POST /events", () => {
       eventTime: new Date().toISOString(),
       value: 100,
       campaignId: "test-campaign",
+      source: "internal_martech",
+      clickId: "test-click-id",
     };
     mockedAdEventsXDummyApi.mockRejectedValue({
       status: 400,
@@ -170,6 +178,8 @@ describe("POST /events", () => {
       eventTime: new Date().toISOString(),
       value: 100,
       campaignId: "test-campaign",
+      source: "internal_martech",
+      clickId: "test-click-id",
     };
     mockedAdEventsXDummyApi.mockRejectedValue({
       status: 503,
@@ -182,7 +192,7 @@ describe("POST /events", () => {
       .send(validEvent);
 
     expect(res.statusCode).toEqual(500);
-    // The number of calls will be MAX_RETRIES (1 initial + 2 retries)
-    expect(mockedAdEventsXDummyApi).toHaveBeenCalledTimes(3);
-  }, 30000);
+    // The number of calls will be MAX_RETRIES (1 initial + 3 retries)
+    expect(mockedAdEventsXDummyApi).toHaveBeenCalledTimes(4);
+  }, 60000);
 });

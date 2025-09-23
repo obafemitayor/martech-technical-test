@@ -7,7 +7,8 @@ const MAX_RETRIES = 3;
 const ATTEMPT_TO_WORD_MAP: { [key: number]: string } = {
   0: "first",
   1: "second",
-  2: "third"
+  2: "third",
+  3: "fourth",
 };
 
 const API_URL = "https://api.adeventsx.example/v1/conversions";
@@ -29,7 +30,7 @@ class EventService {
       ts: Math.floor(new Date(payload.eventTime).getTime() / 1000),
       valueCents: Math.round(payload.value * 100),
       campaign: payload.campaignId,
-      source: "internal_martech",
+      source: payload.source,
     };
   }
 
@@ -85,7 +86,7 @@ class EventService {
     payload: TransformedEventPayload,
   ): Promise<void> {
     let attempts = 0;
-    while (attempts < MAX_RETRIES) {
+    while (attempts <= MAX_RETRIES) {
       try {
         await this.sendEventToExternalApi(payload, attempts);
         return;
