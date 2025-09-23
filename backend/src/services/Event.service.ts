@@ -7,8 +7,7 @@ const MAX_RETRIES = 3;
 const ATTEMPT_TO_WORD_MAP: { [key: number]: string } = {
   0: "first",
   1: "second",
-  2: "third",
-  3: "fourth",
+  2: "third"
 };
 
 const API_URL = "https://api.adeventsx.example/v1/conversions";
