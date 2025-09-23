@@ -63,8 +63,7 @@ This challenge did not explicitly require authentication, but I included a minim
 - It accepts a simple payload `{"clientId": "marketing-dashboard"}` and returns a signed JWT.  
 - The generated JWT can then be used to access the `/events` endpoint by including it in the `Authorization` header as a Bearer token:
 
-```http
-Authorization: Bearer <token>
+```http Authorization: Bearer <token> ```
 
 
 ## Running the Application
